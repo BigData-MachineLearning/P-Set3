@@ -121,30 +121,30 @@ rm(num_ocup)
 ##### === 3.seleccion de variables de variables === #####
 #=======================================================#
 
+
 train <- train_hogares
 test <- test_hogares
 
-tanda_1 <- c("p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
-             "jefe_mujer", "educ_jefe", "num_minors", "num_ocup", )
-
-train1 <- train |> 
-  select(all_of(tanda_1))
-
-test1 <- train |> 
-  select(all_of(tanda_1))
+train_vars <- c("id", "clase", "p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
+             "jefe_mujer", "educ_jefe", "num_minors", "num_ocup", "npersug",
+             "ingtotug" , "ingtotugarr" ,"ingpcug",  "li" ,  "lp"  , "pobre" , 
+             "indigente", "npobres" ,"nindigentes" )
 
 
+test_vars <- c("id", "clase","p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
+               "jefe_mujer", "educ_jefe", "num_minors", "num_ocup" )
 
-
-
-
-
-
-
-
-
-
-
+# train1 <- train |> 
+#   select(all_of(train_vars))
+# 
+# test1 <- test |> 
+#   select(all_of(test_vars))
+# 
+# 
+# rio::export(train1, "db_tandas/tanda1/train1.rds")
+# 
+# rio::export(test1, "db_tandas/tanda1/test1.rds")
+# 
 
 
 
