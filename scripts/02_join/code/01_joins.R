@@ -144,7 +144,7 @@ test_vars <- c("id", "clase","p5000","p5010", "p5090", "nper", "depto", "mean_ed
 # rio::export(train1, "db_tandas/tanda1/train1.rds")
 # 
 # rio::export(test1, "db_tandas/tanda1/test1.rds")
-# 
+
 
 
 
