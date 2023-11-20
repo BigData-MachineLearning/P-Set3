@@ -1,4 +1,6 @@
 
+source("00_packages.R")
+
 #===========================#
 ##### === 0.Import  === #####
 #===========================#
@@ -134,16 +136,16 @@ train_vars <- c("id", "clase", "p5000","p5010", "p5090", "nper", "depto", "mean_
 test_vars <- c("id", "clase","p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
                "jefe_mujer", "educ_jefe", "num_minors", "num_ocup" )
 
-# train1 <- train |> 
-#   select(all_of(train_vars))
-# 
-# test1 <- test |> 
-#   select(all_of(test_vars))
-# 
-# 
-# rio::export(train1, "db_tandas/tanda1/train1.rds")
-# 
-# rio::export(test1, "db_tandas/tanda1/test1.rds")
+train1 <- train |>
+  select(all_of(train_vars))
+
+test1 <- test |>
+  select(all_of(test_vars))
+
+
+rio::export(train1, "db_tandas/tanda1/train1.rds")
+
+rio::export(test1, "db_tandas/tanda1/test1.rds")
 
 
 
