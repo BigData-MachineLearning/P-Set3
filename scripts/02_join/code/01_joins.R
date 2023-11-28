@@ -254,15 +254,15 @@ rm(pay_otros)
 # p6630s1-6 primas 
 
 primas <- train_personas |> group_by(id) |>
-  summarise(primas = sum(p6630s1 == 1| p6630s2 == 1| p6630s3 == 1| p6630s4 == 1|
-                                 p6630s5 == 1|p6630s6 == 1 , na.rm = T))
+  summarise(primas = sum(p6630s1 == 1| p6630s2 == 1| p6630s3 == 1| p6630s4 == 1
+                         |p6630s6 == 1 , na.rm = T))
 
 train_hogares <- left_join(train_hogares, primas)
 rm(primas)
 
 primas <- test_personas |> group_by(id) |>
   summarise(primas = sum(p6630s1 == 1| p6630s2 == 1| p6630s3 == 1| p6630s4 == 1|
-                                 p6630s5 == 1|p6630s6 == 1 , na.rm = T))
+                                 p6630s6 == 1 , na.rm = T))
 
 test_hogares <- left_join(test_hogares, primas)
 rm(primas)
