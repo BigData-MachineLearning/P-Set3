@@ -11,13 +11,11 @@ train_hogares <- import("scripts/01_import/output/train_hogares.rds") |> clean_n
 test_personas <- import("scripts/01_import/output/test_personas.rds") |> clean_names()
 test_hogares <- import("scripts/01_import/output/test_hogares.rds") |> clean_names()
 
-
 #===================================#
 ##### === 1.check the data  === #####
 #===================================#
 
 # Colnames  
-
 
 colnames(test_hogares)
 colnames(test_personas)
@@ -25,9 +23,6 @@ colnames(test_personas)
 # skim(train_personas)
 
 train_personas[,c("id", "orden")] |> duplicated() |> table()
-
-
-
 
 
 #========================================#
@@ -104,7 +99,7 @@ reg_salud <- train_personas |> group_by(id) |>
 train_hogares <- left_join(train_hogares, reg_salud)
 rm(reg_salud) 
 
-reg_salud <- tets_personas |> group_by(id) |>
+reg_salud <- test_personas |> group_by(id) |>
   summarise(reg_salud = sum(p6100 == 3, na.rm = T),
             num_adult = sum(p6040 >= 18, na.rm = T)) |>
   mutate(reg_salud = reg_salud/num_adult)
@@ -137,7 +132,7 @@ num_ocup <- train_personas %>%
   group_by(id) %>% summarise(num_ocup = sum(worker)) |>
   mutate(num_ocup = ifelse(is.na(num_ocup),0, num_ocup) )
 
-train_hogares <- left_join(train_hogares, num_ocup)
+train_hogares <- left_join(train_hogares, num_ocup) 
 rm(num_ocup)  
 
 
@@ -179,26 +174,129 @@ access_finan <- test_personas |> group_by(id) |>
   summarise(access_finan = sum(p7510s5 == 1, na.rm = T))
 
 test_hogares <- left_join(test_hogares, access_finan)
+rm(access_finan)
 
-# Primas, bonificaciones, auxilio de transporte
+
+# Primas, bonificaciones, auxilio de transporte / # ocupados
+
+bonificaciones <- train_personas |> group_by(id) |>
+  summarise(bonificaciones = sum(p6580 == 1|p6545 == 1|p6585s2==1 , na.rm = T))
+
+train_hogares <- left_join(train_hogares, bonificaciones)|>mutate(bonificaciones = bonificaciones/num_adult)
+rm(bonificaciones)
+
+bonificaciones <- test_personas |> group_by(id) |>
+  summarise(bonificaciones = sum(p6580 == 1|p6545 == 1|p6585s2==1 , na.rm = T))
+
+test_hogares <- left_join(test_hogares, bonificaciones) |>mutate(bonificaciones = bonificaciones/num_adult)
+rm(bonificaciones)
 
 
 # Auxilio alimentacion
 
+subs_alimeto <- train_personas |> group_by(id) |>
+  summarise(subs_alimeto = sum(p6585s1==1 , na.rm = T))
+
+train_hogares <- left_join(train_hogares, subs_alimeto)|>mutate(subs_alimeto = subs_alimeto/num_adult)
+rm(subs_alimeto)
+
+subs_alimeto <- test_personas |> group_by(id) |>
+  summarise(subs_alimeto = sum(p6585s1==1 , na.rm = T))
+
+test_hogares <- left_join(test_hogares, subs_alimeto) |>mutate(subs_alimeto = subs_alimeto/num_adult)
+rm(subs_alimeto)
+
 
 # p6590 - pago en alimento
 
+pay_alimento <- train_personas |> group_by(id) |>
+  summarise(pay_alimento = sum(p6590 == 1, na.rm = T))
+
+train_hogares <- left_join(train_hogares, pay_alimento)
+rm(pay_alimento)
+
+pay_alimento <- test_personas |> group_by(id) |>
+  summarise(pay_alimento = sum(p6590 == 1, na.rm = T))
+
+test_hogares <- left_join(test_hogares, pay_alimento)
+rm(pay_alimento)
+
+
 # p6600 - pago en vivienda
 
-# P6620 otros pagfos en especie
+pay_vivienda <- train_personas |> group_by(id) |>
+  summarise(pay_vivienda = sum(p6600 == 1, na.rm = T))
+
+train_hogares <- left_join(train_hogares, pay_vivienda)
+rm(pay_vivienda)
+
+pay_vivienda <- test_personas |> group_by(id) |>
+  summarise(pay_vivienda = sum(p6600 == 1, na.rm = T))
+
+test_hogares <- left_join(test_hogares, pay_vivienda)
+rm(pay_vivienda)
+
+
+# p6620 otros pagoos en especie
+
+pay_otros <- train_personas |> group_by(id) |>
+  summarise(pay_otros = sum(p6620 == 1, na.rm = T))
+
+train_hogares <- left_join(train_hogares, pay_otros)
+rm(pay_otros)
+
+pay_otros <- test_personas |> group_by(id) |>
+  summarise(pay_otros = sum(p6620 == 1, na.rm = T))
+
+test_hogares <- left_join(test_hogares, pay_otros)
+rm(pay_otros)
 
 # p6630s1-6 primas 
 
-# Horas trabajadas en el hogar en poromedio 
+primas <- train_personas |> group_by(id) |>
+  summarise(primas = sum(p6630s1 == 1| p6630s2 == 1| p6630s3 == 1| p6630s4 == 1|
+                                 p6630s5 == 1|p6630s6 == 1 , na.rm = T))
 
+train_hogares <- left_join(train_hogares, primas)
+rm(primas)
+
+primas <- test_personas |> group_by(id) |>
+  summarise(primas = sum(p6630s1 == 1| p6630s2 == 1| p6630s3 == 1| p6630s4 == 1|
+                                 p6630s5 == 1|p6630s6 == 1 , na.rm = T))
+
+test_hogares <- left_join(test_hogares, primas)
+rm(primas)
+
+# Horas trabajadas en el hogar en promedio 
+
+mean_hrs_work <- train_personas |> group_by(id) |>
+  summarise(mean_hrs_work = mean(p6800 , na.rm = T)) |> 
+  mutate(mean_hrs_work = ifelse(is.nan(mean_hrs_work), 0, mean_hrs_work))
+
+train_hogares <- left_join(train_hogares, mean_hrs_work)
+rm(mean_hrs_work)
+
+mean_hrs_work <- test_personas |> group_by(id) |>
+  summarise(mean_hrs_work = mean(p6800 , na.rm = T)) |> 
+  mutate(mean_hrs_work = ifelse(is.nan(mean_hrs_work), 0, mean_hrs_work))
+
+test_hogares <- left_join(test_hogares, mean_hrs_work)
+rm(mean_hrs_work)
 
 # p6870 tqamaño lugar de trabajo - jefe del hogar
 
+work_size  <- train_personas %>% group_by(id) %>%
+  summarize( work_size  = first(p6870, order_by = p6050) ) 
+
+train_hogares<-left_join(train_hogares,work_size)
+rm(work_size)
+
+
+work_size  <- test_personas %>% group_by(id) %>%
+  summarize( work_size  = first(p6870, order_by = p6050) ) 
+
+test_hogares<-left_join(test_hogares,work_size)
+rm(work_size)
 
 # cotizantes/ numero adultos p6920
 
@@ -216,7 +314,7 @@ test_hogares <- left_join(test_hogares, access_finan)
 
 # p7510s2 remesas
 
-# Ayudas dinero del país P7510s3
+# Ayudas dinero del país p7510s3
 
 #=======================================================#
 ##### === 3.seleccion de variables de variables === #####
@@ -226,20 +324,6 @@ test_hogares <- left_join(test_hogares, access_finan)
 train <- train_hogares
 test <- test_hogares
 
-train_vars <- c("id", "clase", "p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
-             "jefe_mujer", "educ_jefe", "num_minors", "num_ocup", "npersug",
-             "ingtotug" , "ingtotugarr" ,"ingpcug",  "li" ,  "lp"  , "pobre" , 
-             "indigente", "npobres" ,"nindigentes" )
-
-
-test_vars <- c("id", "clase","p5000","p5010", "p5090", "nper", "depto", "mean_edad", 
-               "jefe_mujer", "educ_jefe", "num_minors", "num_ocup" )
-
-train1 <- train |>
-  select(all_of(train_vars))
-
-test1 <- test |>
-  select(all_of(test_vars))
 
 
 rio::export(train1, "db_tandas/tanda1/train1.rds")
