@@ -19,8 +19,8 @@ test_hogares <- import("scripts/01_import/output/test_hogares.rds") |> clean_nam
 # Colnames  
 
 
-colnames(train_hogares)
-colnames(train_personas)
+colnames(test_hogares)
+colnames(test_personas)
 
 # skim(train_personas)
 
@@ -36,7 +36,8 @@ train_personas[,c("id", "orden")] |> duplicated() |> table()
 
 ### Edad promedio del hogar ###
 
-mean_edad<-train_personas %>% group_by(id) %>% summarize(mean_edad=mean(p6040,na.rm = TRUE)) 
+mean_edad<-train_personas %>% group_by(id) %>%
+  summarize(mean_edad=mean(p6040,na.rm = TRUE)) 
 
 train_hogares<-left_join(train_hogares,mean_edad)
 rm(mean_edad)
@@ -77,12 +78,31 @@ educ_jefe  <- test_personas %>% group_by(id) %>%
 test_hogares<-left_join(test_hogares,educ_jefe)
 rm(educ_jefe)
 
-# Si el hogar tiene pensionados
+# Tasa de afiliacion
 
+tasa_afil <- train_personas |>group_by(id) |>
+  summarise(tasa_afil = sum(p6090==1, na.rm = T)) 
 
+train_hogares <- left_join(train_hogares, tasa_afil) |>
+  mutate(tasa_afil = tasa_afil/nper)
+rm(tasa_afil)
+  
+tasa_afil <- test_personas |>group_by(id) |>
+  summarise(tasa_afil = sum(p6090==1, na.rm = T)) 
 
+test_hogares <- left_join(test_hogares, tasa_afil) |>
+  mutate(tasa_afil = tasa_afil/nper)
+rm(tasa_afil)
 
+# regimen subsidiado
 
+reg_salud <- train_personas |> group_by(id) |>
+  summarise(reg_salud = sum(p6100 == 3, na.rm = T),
+            num_adult = sum(p6040 >= 18, na.rm = T)) |>
+  mutate(reg_salud = reg_salud/num_adult)
+
+train_hogares <- left_join(train_hogares, reg_salud)
+rm(reg_salud)
 ### numero de menores de edad en el hogar ###
 
 num_minors <- train_personas %>%  
@@ -118,6 +138,24 @@ num_ocup <- test_personas %>%
 
 test_hogares <- left_join(test_hogares, num_ocup)
 rm(num_ocup)  
+
+# Variable costo vvienda
+
+train_hogares <- train_hogares |>
+  mutate(cost_arriendo = case_when( is.na(p5130) ~ p5140,
+                                    is.na(p5140) ~ p5130))
+
+test_hogares <- test_hogares |>
+  mutate(cost_arriendo = case_when( is.na(p5130) ~ p5140,
+                                    is.na(p5140) ~ p5130))
+
+# personas_por cuarto
+
+train_hogares <- train_hogares |> 
+  mutate(cuartos_per = nper/p5010)
+
+test_hogares <- test_hogares |> 
+  mutate(cuartos_per = nper/p5010)
 
 #=======================================================#
 ##### === 3.seleccion de variables de variables === #####
