@@ -102,7 +102,17 @@ reg_salud <- train_personas |> group_by(id) |>
   mutate(reg_salud = reg_salud/num_adult)
 
 train_hogares <- left_join(train_hogares, reg_salud)
-rm(reg_salud)
+rm(reg_salud) 
+
+reg_salud <- tets_personas |> group_by(id) |>
+  summarise(reg_salud = sum(p6100 == 3, na.rm = T),
+            num_adult = sum(p6040 >= 18, na.rm = T)) |>
+  mutate(reg_salud = reg_salud/num_adult)
+
+test_hogares <- left_join(test_hogares, reg_salud)
+rm(reg_salud) 
+
+
 ### numero de menores de edad en el hogar ###
 
 num_minors <- train_personas %>%  
@@ -156,6 +166,57 @@ train_hogares <- train_hogares |>
 
 test_hogares <- test_hogares |> 
   mutate(cuartos_per = nper/p5010)
+
+# Acceso sistema financiero
+
+access_finan <- train_personas |> group_by(id) |>
+  summarise(access_finan = sum(p7510s5 == 1, na.rm = T))
+
+train_hogares <- left_join(train_hogares, access_finan)
+rm(access_finan)
+
+access_finan <- test_personas |> group_by(id) |>
+  summarise(access_finan = sum(p7510s5 == 1, na.rm = T))
+
+test_hogares <- left_join(test_hogares, access_finan)
+
+# Primas, bonificaciones, auxilio de transporte
+
+
+# Auxilio alimentacion
+
+
+# p6590 - pago en alimento
+
+# p6600 - pago en vivienda
+
+# P6620 otros pagfos en especie
+
+# p6630s1-6 primas 
+
+# Horas trabajadas en el hogar en poromedio 
+
+
+# p6870 tqamaño lugar de trabajo - jefe del hogar
+
+
+# cotizantes/ numero adultos p6920
+
+# p7040 gente con segundo trbajao/numero adultos
+
+#  subempleo p7090 + p7110 + p7120
+
+# p7160 dispónible para trabajar
+
+# p7422 si recibio plata por trabajop
+
+# p7495 recibio pagos por arriendos
+
+# p7505 ingresos de otras personas, hogares, etc. 
+
+# p7510s2 remesas
+
+# Ayudas dinero del país P7510s3
 
 #=======================================================#
 ##### === 3.seleccion de variables de variables === #####
