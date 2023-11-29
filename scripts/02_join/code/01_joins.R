@@ -5,6 +5,9 @@ source("00_packages.R")
 ##### === 0.Import  === #####
 #===========================#
 
+rm(list = ls()) #Limpiar el entorno.
+
+
 train_personas <- import("scripts/01_import/output/train_personas.rds") |> clean_names()
 train_hogares <- import("scripts/01_import/output/train_hogares.rds") |> clean_names()
 
@@ -298,15 +301,33 @@ work_size  <- test_personas %>% group_by(id) %>%
 test_hogares<-left_join(test_hogares,work_size)
 rm(work_size)
 
+colnames(test_hogares)
+colnames(train_hogares)
+
 # cotizantes/ numero adultos p6920
 
-# p7040 gente con segundo trbajao/numero adultos
+tasa_cotizantes <- train_personas %>% group_by(id) %>% 
+  mutate(n_afiliados = ifelse(!is.na(p6920)&p6920 == 1 | p6920 == 3, 1, 0)) %>% 
+  summarize(tasa_cotizantes = sum(n_afiliados == 1, na.rm=T))
+
+train_hogares <- left_join(train_hogares,tasa_cotizantes) %>% 
+  mutate(tasa_cotizantes=tasa_cotizantes/num_adult)
+
+tasa_cotizantes <- test_personas %>% group_by(id) %>% 
+  mutate(n_afiliados = ifelse(!is.na(p6920)&p6920 == 1 | p6920 == 3, 1, 0)) %>% 
+  summarize(tasa_cotizantes = sum(n_afiliados == 1, na.rm=T))
+
+test_hogares <- left_join(test_hogares,tasa_cotizantes) %>% 
+  mutate(tasa_cotizantes=tasa_cotizantes/num_adult)
+
+rm(tasa_cotizantes)
+
 
 #  subempleo p7090 + p7110 + p7120
 
 # p7160 dispónible para trabajar
 
-# p7422 si recibio plata por trabajop
+# p7422 si recibio plata por trabajo
 
 # p7495 recibio pagos por arriendos
 
