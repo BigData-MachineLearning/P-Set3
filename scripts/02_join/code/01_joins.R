@@ -442,14 +442,14 @@ rm(ayuda_gob)
 #=======================================================#
 
 
-train <- train_hogares
-test <- test_hogares
+train_f <- train_hogares
+test_f <- test_hogares
 
 
 
-rio::export(train1, "db_tandas/tanda1/train1.rds")
+rio::export(train_f, "db_tandas/tanda1/train_f.rds")
 
-rio::export(test1, "db_tandas/tanda1/test1.rds")
+rio::export(test_f, "db_tandas/tanda1/test_f.rds")
 
 
 
