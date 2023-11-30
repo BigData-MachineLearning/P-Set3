@@ -7,7 +7,6 @@ source("00_packages.R")
 
 rm(list = ls()) #Limpiar el entorno.
 
-
 train_personas <- import("scripts/01_import/output/train_personas.rds") |> clean_names()
 train_hogares <- import("scripts/01_import/output/train_hogares.rds") |> clean_names()
 
@@ -325,18 +324,119 @@ rm(tasa_cotizantes)
 
 #  subempleo p7090 + p7110 + p7120
 
+sub_empleo <- train_personas %>%
+  group_by(id) %>%
+  summarize(sub_empleo = sum(p7090 + p7110 + p7120, na.rm = TRUE))
+
+train_hogares <- left_join(train_hogares, sub_empleo, by = "id") %>% 
+  mutate(sub_empleo=sub_empleo/num_adult)
+
+sub_empleo <- test_personas %>%
+  group_by(id) %>%
+  summarize(sub_empleo = sum(p7090 + p7110 + p7120, na.rm = TRUE))
+
+test_hogares <- left_join(test_hogares, sub_empleo, by = "id") %>% 
+  mutate(sub_empleo=sub_empleo/num_adult)
+
+rm(sub_empleo)
+
 # p7160 dispónible para trabajar
+
+disp_trabajar <- train_personas %>% 
+  group_by(id) %>% mutate(disp_trabajar=ifelse(p7160==1,1,0)) %>% 
+  summarize(disp_trabajar=sum(disp_trabajar==1, na.rm=T))
+
+train_hogares <- left_join(train_hogares,disp_trabajar) %>% 
+  mutate(disp_trabajar=disp_trabajar/num_adult)
+
+disp_trabajar <- test_personas %>% 
+  group_by(id) %>% mutate(disp_trabajar=ifelse(p7160==1,1,0)) %>% 
+  summarize(disp_trabajar=sum(disp_trabajar==1, na.rm=T))
+
+test_hogares <- left_join(test_hogares,disp_trabajar) %>% 
+  mutate(disp_trabajar=disp_trabajar/num_adult)
+
+rm(disp_trabajar)
 
 # p7422 si recibio plata por trabajo
 
+dinero_trabajo <- train_personas %>% 
+  group_by(id) %>% mutate(dinero_trabajo=ifelse(p7422==1,1,0)) %>% 
+  summarize(dinero_trabajo=sum(dinero_trabajo==1,na.rm=T))
+
+train_hogares <- left_join(train_hogares,dinero_trabajo)
+
+dinero_trabajo <- test_personas %>% 
+  group_by(id) %>% mutate(dinero_trabajo=ifelse(p7422==1,1,0)) %>% 
+  summarize(dinero_trabajo=sum(dinero_trabajo==1,na.rm=T))
+
+test_hogares <- left_join(test_hogares,dinero_trabajo)
+
+rm(dinero_trabajo)
+
 # p7495 recibio pagos por arriendos
+
+dinero_arriendo <- train_personas %>% 
+  group_by(id) %>% mutate(dinero_arriendo=ifelse(p7495==1,1,0)) %>% 
+  summarize(dinero_arriendo=sum(dinero_arriendo==1,na.rm=T))
+
+train_hogares <- left_join(train_hogares,dinero_arriendo)
+
+dinero_arriendo <- test_personas %>% 
+  group_by(id) %>% mutate(dinero_arriendo=ifelse(p7495==1,1,0)) %>% 
+  summarize(dinero_arriendo=sum(dinero_arriendo==1,na.rm=T))
+
+test_hogares <- left_join(test_hogares,dinero_arriendo)
+
+rm(dinero_arriendo)
 
 # p7505 ingresos de otras personas, hogares, etc. 
 
+dinero_externo <- train_personas %>% 
+  group_by(id) %>% mutate(dinero_externo=ifelse(p7505==1,1,0)) %>% 
+  summarize(dinero_externo=sum(dinero_externo==1,na.rm=T))
+
+train_hogares <- left_join(train_hogares,dinero_externo)
+
+dinero_externo <- test_personas %>% 
+  group_by(id) %>% mutate(dinero_externo=ifelse(p7505==1,1,0)) %>% 
+  summarize(dinero_externo=sum(dinero_externo==1,na.rm=T))
+
+test_hogares <- left_join(test_hogares,dinero_externo)
+
+rm(dinero_externo)
+
 # p7510s2 remesas
+
+dinero_remesas <- train_personas %>% 
+  group_by(id) %>% mutate(dinero_remesas=ifelse(p7510s2==1,1,0)) %>% 
+  summarize(dinero_remesas=sum(dinero_remesas==1,na.rm=T))
+
+train_hogares <- left_join(train_hogares,dinero_remesas)
+
+dinero_remesas <- test_personas %>% 
+  group_by(id) %>% mutate(dinero_remesas=ifelse(p7510s2==1,1,0)) %>% 
+  summarize(dinero_remesas=sum(dinero_remesas==1,na.rm=T))
+
+test_hogares <- left_join(test_hogares,dinero_remesas)
+
+rm(dinero_remesas)
 
 # Ayudas dinero del país p7510s3
 
+ayuda_gob <- train_personas %>% 
+  group_by(id) %>% mutate(ayuda_gob=ifelse(p7510s3==1,1,0)) %>% 
+  summarize(ayuda_gob=sum(ayuda_gob==1,na.rm=T))
+
+train_hogares <- left_join(train_hogares,ayuda_gob)
+
+ayuda_gob <- test_personas %>% 
+  group_by(id) %>% mutate(ayuda_gob=ifelse(p7510s3==1,1,0)) %>% 
+  summarize(ayuda_gob=sum(ayuda_gob==1,na.rm=T))
+
+test_hogares <- left_join(test_hogares,ayuda_gob)
+
+rm(ayuda_gob)
 #=======================================================#
 ##### === 3.seleccion de variables de variables === #####
 #=======================================================#
