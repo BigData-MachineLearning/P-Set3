@@ -21,11 +21,12 @@ train["p5100"][is.na(train["p5100"])] <- 0
 test["work_size"][is.na(test["work_size"])] <- 0
 test["p5100"][is.na(test["p5100"])] <- 0
 
-train <- train %>% select(p5000,p5010,p5090,p5100,p5100,p5140, nper, npersug,li,lp,mean_edad,jefe_mujer,educ_jefe,
-                          tasa_afil,reg_salud,num_adult,num_minors,num_ocup,cost_arriendo,cuartos_per,
-                          access_finan,bonificaciones,subs_alimeto,pay_alimento,pay_vivienda,pay_otros,primas,
-                          mean_hrs_work,work_size,tasa_cotizantes,sub_empleo,disp_trabajar,dinero_trabajo,
+train <- train %>% select(p5090,p5100, nper,jefe_mujer,educ_jefe,tasa_afil
+                          ,reg_salud,num_adult,num_minors,num_ocup,cost_arriendo,cuartos_per,
+                          access_finan,bonificaciones,subs_alimeto,primas,
+                          mean_hrs_work,work_size,tasa_cotizantes,sub_empleo,dinero_trabajo,
                           dinero_arriendo, dinero_externo, dinero_remesas, ayuda_gob, pobre)
+
 
 train <- train |> 
   mutate( pobre = factor(pobre))
