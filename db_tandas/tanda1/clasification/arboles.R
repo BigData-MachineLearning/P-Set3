@@ -29,7 +29,7 @@ train <- train %>% select(p5090,p5100, nper,jefe_mujer,educ_jefe,tasa_afil
 
 
 train <- train |> 
-  mutate( pobre = factor(pobre))
+  mutate( pobre = as.factor(pobre))
 
 names(train)
 tree_spec <- decision_tree(tree_depth = tune(),
