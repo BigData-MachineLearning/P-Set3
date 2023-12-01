@@ -96,6 +96,7 @@ rm(tasa_afil)
 reg_salud <- train_personas |> group_by(id) |>
   summarise(reg_salud = sum(p6100 == 3, na.rm = T),
             num_adult = sum(p6040 >= 18, na.rm = T)) |>
+  mutate(num_adult = ifelse(num_adult ==0, 1, num_adult)) |>
   mutate(reg_salud = reg_salud/num_adult)
 
 train_hogares <- left_join(train_hogares, reg_salud)
@@ -104,6 +105,7 @@ rm(reg_salud)
 reg_salud <- test_personas |> group_by(id) |>
   summarise(reg_salud = sum(p6100 == 3, na.rm = T),
             num_adult = sum(p6040 >= 18, na.rm = T)) |>
+  mutate(num_adult = ifelse(num_adult ==0, 1, num_adult)) |>
   mutate(reg_salud = reg_salud/num_adult)
 
 test_hogares <- left_join(test_hogares, reg_salud)
@@ -446,11 +448,10 @@ train_f <- train_hogares
 test_f <- test_hogares
 
 
-
+colSums(is.na(train_f))
 rio::export(train_f, "db_tandas/tanda1/train_f.rds")
 
 rio::export(test_f, "db_tandas/tanda1/test_f.rds")
-
 
 
 
