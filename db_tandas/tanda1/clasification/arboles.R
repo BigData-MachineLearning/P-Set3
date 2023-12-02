@@ -6,6 +6,7 @@ source("00_packages.R")
 #===========================#
 
 rm(list = ls()) #Limpiar el entorno.
+
 # Importo los datos:
 
 train <- import("db_tandas/tanda1/train_f.rds")
@@ -25,20 +26,16 @@ train <- train %>% select(p5090,p5100, nper,jefe_mujer,educ_jefe,tasa_afil
                           ,reg_salud,num_adult,num_minors,num_ocup,cost_arriendo,cuartos_per,
                           access_finan,bonificaciones,subs_alimeto,primas,
                           mean_hrs_work,work_size,tasa_cotizantes,sub_empleo,dinero_trabajo,
-                          dinero_arriendo, dinero_externo, dinero_remesas, ayuda_gob, pobre)
-
-
-train <- train |> 
-  mutate( pobre = as.factor(pobre))
+                          dinero_arriendo, dinero_externo, dinero_remesas, ayuda_gob, ingtotugarr, lp)
 
 names(train)
 tree_spec <- decision_tree(tree_depth = tune(),
                            min_n = tune(),
                            cost_complexity = tune()) |>
   set_engine("rpart") |>
-  set_mode("classification")
+  set_mode("regression")
 
-recipe <- recipe(pobre ~., data = train) |>
+recipe <- recipe(ingtotugarr ~., data = train) |>
   step_nzv() |>
   step_novel(all_nominal_predictors()) |> 
   step_dummy(all_nominal_predictors()) 
@@ -60,9 +57,9 @@ grid_tree <- grid_regular(tree_depth(range = c(4,20)),
 tuned_tree <- tune_grid(tree_wf,
                         resamples =tree_folds,
                         grid = grid_tree,
-                        metrics = metric_set(f_meas))
+                        metrics = metric_set(rmse))
 
-best_parms_tree <- select_best(tuned_tree, metric = "f_meas")
+best_parms_tree <- select_best(tuned_tree, metric = "rmse")
 best_parms_tree
 
 # Finalizar el flujo de trabajo 'workflow' con el mejor valor de parametros
