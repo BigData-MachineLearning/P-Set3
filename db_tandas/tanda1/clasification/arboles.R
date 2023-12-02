@@ -41,6 +41,13 @@ recipe <- recipe(ingtotugarr ~., data = train) |>
   step_dummy(all_nominal_predictors()) 
 
 
+
+recipe <- recipe(pobre ~., data = train) |>
+  step_nzv() |>
+  step_novel(all_nominal_predictors()) |> 
+  step_dummy(all_nominal_predictors()) 
+
+
 tree_wf <- workflow() |>
   add_model(tree_spec) |>
   add_recipe(recipe)
@@ -66,6 +73,25 @@ best_parms_tree
 tree_final <- finalize_workflow(tree_wf, best_parms_tree)
 
 tree_final_fit <- fit(tree_final, data = train)
+
+
+
+tree_final_fit %>%
+  extract_fit_engine() %>%
+  rpart.plot(type = 4,             
+             fallen = F, 
+             under = T,
+             leaf.round = 1,       
+             extra = 101,          
+             branch = 0.5,         
+             box.palette = "RdBu",
+             digits = -3,
+             main = "Ingresos - nivel 1", 
+             cex = 1,
+             faclen = 0,
+             lwd = 2,
+             roundint=F)# Palette for coloring the node)
+
 
 test$pred1 <- predict(tree_final_fit, test)[[1]]
 
