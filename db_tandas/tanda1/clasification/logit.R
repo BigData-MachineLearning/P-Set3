@@ -2,6 +2,7 @@
 source("00_packages.R")
 
 #Logit 2
+
 rm(list = ls()) #Limpiar el entorno.
 
 train <- import("db_tandas/tanda1/train_f.rds")
@@ -15,32 +16,28 @@ train["p5100"][is.na(train["p5100"])] <- 0
 test["work_size"][is.na(test["work_size"])] <- 0
 test["p5100"][is.na(test["p5100"])] <- 0
 
-train <- train %>% select(p5090,p5100, nper,jefe_mujer,educ_jefe,tasa_afil
-                          ,reg_salud,num_adult,num_minors,num_ocup,cost_arriendo,cuartos_per,
-                          access_finan,bonificaciones,subs_alimeto,primas,
-                          mean_hrs_work,work_size,tasa_cotizantes,sub_empleo,dinero_trabajo,
-                          dinero_arriendo, dinero_externo, dinero_remesas, ayuda_gob, ingtotugarr, lp, pobre)
+train <- train %>% select(p5000,p5010,p5090,p5100,p5100, nper, npersug,li,lp,mean_edad,jefe_mujer,educ_jefe,
+                          tasa_afil,reg_salud,num_adult,num_minors,num_ocup,cost_arriendo,cuartos_per,
+                          access_finan,bonificaciones,subs_alimeto,pay_alimento,pay_vivienda,pay_otros,primas,
+                          mean_hrs_work,work_size,tasa_cotizantes,sub_empleo,disp_trabajar,dinero_trabajo,
+                          dinero_arriendo, dinero_externo, dinero_remesas, ayuda_gob, pobre)
 
-train <- train %>%  mutate( jefe_mujer = as.factor(jefe_mujer),
-                          educ_jefe = as.factor(educ_jefe),
-                          p5090 = as.factor(p5090),
-                          pobre = factor(pobre, levels=c(0,1),labels=c("pobre","no pobre")))
+train <- train |> 
+  mutate( pobre = factor(pobre))
+
 
 logistic_spec <- logistic_reg() |>
   set_engine("glm") |>
   set_mode("classification")
 
 recipe <- 
-  recipe(formula = pobre ~ p5090+p5100+ nper+jefe_mujer+educ_jefe+tasa_afil
-         +reg_salud+num_adult+num_minors+num_ocup+cost_arriendo+cuartos_per+
-           access_finan+bonificaciones+subs_alimeto+primas+
-           mean_hrs_work+work_size+tasa_cotizantes+sub_empleo+dinero_trabajo+
-           dinero_arriendo+ dinero_externo+ dinero_remesas+ ayuda_gob 
-         , data = train)  %>% 
+  recipe(formula = pobre ~ . , data = train)  %>% 
   step_novel(all_nominal_predictors()) %>% 
   step_dummy(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>% 
-  step_normalize(all_predictors())
+  step_normalize(all_numeric_predictors()) |>
+  step_upsample(pobre, over_ratio = .5)
+
 
 
 
