@@ -66,7 +66,6 @@ rio::export(submission_logit1, "results/classification_logit2.csv")
 
 
 
-
 #Logit 1
 
 train <- import("db_tandas/tanda1/train1.rds")
