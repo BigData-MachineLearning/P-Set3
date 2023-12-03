@@ -115,6 +115,7 @@ submission<- test |> select(id,lp,.pred) |>
   select(id,pobre)
 submission
 
+rio::export(submission, "results/regresion_boostedtree.csv")
 
 
 
