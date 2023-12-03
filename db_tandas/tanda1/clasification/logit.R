@@ -38,6 +38,7 @@ recipe <-
   step_normalize(all_numeric_predictors()) |>
   step_upsample(pobre, over_ratio = .5)
 
+train <-prep(recipe) %>% bake(new_data = NULL)
 
 
 
