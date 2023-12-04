@@ -35,7 +35,7 @@ stargazer(as.data.frame(Caract_hogar),
           type = "text",title = "Estadisticas Descriptivas caracteristicas del hogar",
           digits = 1, out = "table.txt",
           covariate.labels = c("Total cuartos", "habitaciones", "Tipo de ocupacion", "Numero de personas",
-                               "Numero de adultos","Numero de menores de edad","Edad promedio del hogar",
+                               "Numero de adultos","Numero de menores de edad","Cuartos por persona", "Edad promedio del hogar",
                                "Cabeza de hogar mujer", "Educacion cabeza de hogar"))
 
 ## Caracteristicas laborales
@@ -68,7 +68,7 @@ variables_pobreza <- train %>%
   select(li, lp, pobre)
 
 
-stargazer(as.data.frame(Caract_laborales),
+stargazer(as.data.frame(variables_pobreza),
           type = "text",title = "Estadisticas Descriptivas Variables de pobreza",
           digits = 1, out = "table.txt",
           covariate.labels = c("Linea de indigencia", "Linea de pobreza", "Pobre"))
@@ -87,8 +87,8 @@ ggplot(train, aes(x=cuartos_per, y=cost_arriendo, color= pobre)) +
 ggplot(train, aes(x = tasa_afil, y = cost_arriendo, color = pobre)) +
   geom_point() +
   theme_minimal() +
-  labs(title = "Tasa de Afiliación a Salud vs. Costo de Vivienda",
-       x = "Tasa de Afiliación a Salud",
+  labs(title = "tasa de afiliacion vs. Costo de Vivienda",
+       x = "Tasa de Afiliación",
        y = "Costo de Vivienda",
        color = "Pobre") +
   scale_y_continuous(labels = scales::dollar_format())
