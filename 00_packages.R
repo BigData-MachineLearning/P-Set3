@@ -17,6 +17,7 @@ p_load(tidyverse, # Manipular dataframes
        rpart,
        caret,
        stargazer,
-       varhandle
+       varhandle,
+       themis
       ) 
 
