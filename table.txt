@@ -1,0 +1,13 @@
+
+Estadisticas Descriptivas Variables Ingresos y gastos
+=========================================================
+Statistic                    N    Mean St. Dev. Min  Max 
+---------------------------------------------------------
+Ingreso por trabajo       164,959 0.7    1.0     0    9  
+Ingreso por arriendos     164,959 39.2   19.7   0.0 130.0
+Otros ingresos            117,156 3.8    3.3     1    9  
+Remesas                   164,959 0.2    0.7    0.0  9.0 
+Recibe ayuda del gobierno 164,959 0.1    0.3    0.0  4.0 
+Acceso Financiero         164,959 0.8    0.3    0.0  1.0 
+Bonificaciones            164,959 0.5    0.6    0.0  6.0 
+---------------------------------------------------------
