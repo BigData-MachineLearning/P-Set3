@@ -36,55 +36,47 @@ train <- train |>
 
 ada_spec <- boost_tree(
   trees = tune(),
-  min_n = tune(),
-  mtry = tune()
+  min_n = tune()
 ) |>
   set_mode("classification") %>% 
   set_engine("C5.0")
 
-
 ada_grid <- grid_regular(
+  trees(range = c(1, 100)),
   min_n(range = c(1, 10)),
-  trees(range = c(200, 400)),
-  mtry(range = c(4,10)),
-  levels =5)
+  levels = 5
+)
 
-recipe <- recipe(pobre ~ .) |>
-  step_nvz(all_predictors()) |>
-  step_dummy(all_nominal_predictors()) |>
-  step
+recipe <- recipe(pobre ~ ., data = train) |>
+  step_center(all_predictors()) |> 
+  step_scale(all_predictors())
 
 ada_wf <- workflow() |>
   add_model(ada_spec) |>
   add_recipe(recipe)
 
-
 ada_folds <- vfold_cv(train, v = 5)
 
-tuned_ada <- tune_grid(object = ada_wf,
-                       resamples = ada_folds,
-                       grid = ada_grid,
-                       metrics = metric_set(f_meas)
-                       )
+tuned_ada <- tune_grid(
+  object = ada_wf,
+  resamples = ada_folds,
+  grid = ada_grid,
+  metrics = metric_set(f_meas)
+)
 
-
-best_parms_ada <- select_best(tuned_ada,  metric = "f_meas" )
-
+best_parms_ada <- select_best(tuned_ada, metric = "f_meas")
 
 ada_final <- finalize_workflow(ada_wf, best_parms_ada)
 
 ada_final_fit <- fit(ada_final, data = train)
 
-
 test$pred1 <- predict(ada_final_fit, test)[[1]]
 
-test$pred1
 # Guardar datos
-
 submission_ada <- test |> select(id, pred1)
 
+rio::export(submission_ada, "results/tanda1_adaboost2.csv")
 
-rio::export(submission_ada, "results/tanda1_adaboost.csv")
 
 
 
