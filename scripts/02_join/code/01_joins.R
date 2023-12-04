@@ -439,6 +439,22 @@ ayuda_gob <- test_personas %>%
 test_hogares <- left_join(test_hogares,ayuda_gob)
 
 rm(ayuda_gob)
+
+#Oficio jefe del hogar
+oficio  <- train_personas %>% group_by(id) %>%
+  summarize( oficio  = first(oficio, order_by = p6050) ) 
+
+train_hogares<-left_join(train_hogares,oficio)
+rm(oficio)
+
+
+oficio  <- test_personas %>% group_by(id) %>%
+  summarize( oficio  = first(oficio, order_by = p6050) ) 
+
+test_hogares<-left_join(test_hogares,oficio)
+rm(oficio) 
+
+
 #=======================================================#
 ##### === 3.seleccion de variables de variables === #####
 #=======================================================#
