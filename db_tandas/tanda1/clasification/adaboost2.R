@@ -65,7 +65,7 @@ tuned_ada <- tune_grid(
 )
 
 best_parms_ada <- select_best(tuned_ada, metric = "f_meas")
-
+best_parms_ada
 ada_final <- finalize_workflow(ada_wf, best_parms_ada)
 
 ada_final_fit <- fit(ada_final, data = train)

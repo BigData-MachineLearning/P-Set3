@@ -1,6 +1,7 @@
 
 
-
+install.packages("C50")
+library(C50)
 source("00_packages.R")
 
 #===========================#
@@ -89,8 +90,7 @@ test$pred1
 
 # Guardar datos
 
-submission_ada <- test |> select(id, pred1) |>
-  rename(pobre= pred1)
+submission_ada <- test |> select(id, pred1)
 
 
 rio::export(submission_ada, "results/clasification_adaboost3.csv")
