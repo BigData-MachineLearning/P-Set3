@@ -16,4 +16,21 @@ Medir la pobreza es dificil, requiere mucho tiempo y es costoso. Razón por la c
 Cuanto más precisos sean nuestros modelos, con mayor precisión podremos orientar las intervenciones e iterar sobre las políticas, maximizando el impacto y la rentabilidad de estas estrategias
 
 ## Estructura del repo
+`db_tandas`:
+Contiene todas las bases modificadas para la estimacion de los modelos.
+Ademas tiene el archivo de excel de registro
+
+`document`:
+Documento de trabajo final
+
+`results`:
+Contiene los archivos de excel consistentes con los resultados obtenidos tras estimar la pobreza de acuerdo con los modelos propuestos
+
+`scripts`:
+Contiene todos los scrips del taller que se corren para hacer las predicciones. 
+
+`stores`:
+Contiene todas las bases de datos, las originales de train y test, y un template para las submissions.
+
+
 
